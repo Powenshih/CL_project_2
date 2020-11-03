@@ -1,7 +1,5 @@
 //Open and connect socket
 let socket = io();
-// let brush;
-let ellipseSize = 20;
 let balls = [];
 let ballNumber = 10;
 
@@ -13,10 +11,10 @@ socket.on('connect', function() {
 function setup() {
     createCanvas(1000, 1000);
     background(random(100, 220));
-    socket.on('balldata', (data) => {
+    socket.on('ballData', (data) => {
         console.log(data);
-        // remove(data);
-        // drawEllipses(data);
+        removeBalls(data); // go to line 90
+
     });
     for (let i = 0; i < ballNumber; i++) {
         let x = random(width);
@@ -33,7 +31,6 @@ function mouseDragged() {
     let data = {
         x: mouseX,
         y: mouseY,
-        // color: brush,
         left: ballNumber
     }
 
@@ -46,67 +43,48 @@ function mouseDragged() {
             ballNumber = balls.length;
         }
 
+        socket.emit('ballData', data);
     }
-    // ellipse(mouseX, mouseY, 20, 20);
-    socket.emit('balldata', data);
+
+
 };
 
 function draw() {
 
     background(random(100, 220));
-    for (let i = 0; i < balls.length; i++) {
-        if (balls[i].contains(mouseX, mouseY)) {
-            balls[i].changeColor(255);
+    for (let ball of balls) {
+        if (ball.contains(mouseX, mouseY)) {
+            ball.changeColor(255);
         } else {
-            balls[i].changeColor(0);
+            ball.changeColor(0);
         }
-        balls[i].move();
-        balls[i].show();
+        ball.move();
+        ball.show();
         if (balls.length <= 5) {
 
             textSize(50);
             fill(0);
             noStroke();
             textAlign(CENTER);
-            text("YOU ARE KILLER!", 500, 500);
-            if (balls.length == 0) {
-
-                textSize(50);
-                fill(0);
-                noStroke();
-                textAlign(CENTER);
-                text("YOU WIN!", 500, 500);
-            }
+            text("YOU ARE ALMOST THERE!", 500, 500);
+        }
+        if (balls.length == 0) {
+            // this is not working as well
+            textSize(50);
+            fill(0);
+            noStroke();
+            textAlign(CENTER);
+            text("YOU WIN!", 500, 500);
         }
     }
 };
 
-
-// function drawEllipses(data) {
-// fill(data.color, 100, 100);
-// ellipse(data.x, data.y, data.size, data.size);
-// }
-
-// this is not working actually
-function remove(data) {
-    // fill(data.color, 100, 100);
-    // ellipse(data.x, data.y, data.size, data.size);
+function removeBalls(data) {
+    console.log(data);
+    balls.splice(balls.length - 1, 1);
 }
 
-// function keyPressed() {
-//     if (keyCode == UP_ARROW) {
-//         ellipseSize += 10;
-//     } else if (keyCode == UP_ARROW) {
-//         ellipseSize -= 10;
-//     }
-// }
-
-// function mouseClicked() {
-//     brush = random(255);
-// }
-
-
-// ball DNA
+// my ball DNA(class)
 class Ball {
     constructor(x, y, r) {
         this.x = x;
@@ -121,9 +99,8 @@ class Ball {
     }
 
     show() {
-        stroke(255);
+        stroke(0);
         strokeWeight(1);
-        noStroke();
         fill(this.brightness, 100);
         ellipse(this.x, this.y, this.r * 2);
     }
