@@ -28,11 +28,7 @@ function setup() {
 };
 
 function mouseDragged() {
-    let data = {
-        x: mouseX,
-        y: mouseY,
-        left: ballNumber
-    }
+
 
     for (let i = 0; i < balls.length; i++) {
         // this decremental loop is working too
@@ -41,9 +37,16 @@ function mouseDragged() {
             balls.splice(i, 1);
             // PS:this is not working... wait... yes!! it's working with a decremental for loop!!! 7.5: Removing Objects from Arrays - p5.js Tutorial
             ballNumber = balls.length;
+
+            let data = {
+                x: mouseX,
+                y: mouseY,
+                left: ballNumber
+            }
+            socket.emit('ballData', data);
         }
 
-        socket.emit('ballData', data);
+
     }
 
 

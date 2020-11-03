@@ -22,8 +22,8 @@ io.sockets.on('connect', function(socket) {
     // Set the name of the message to be ballData'
     socket.on('ballData', (data) => {
         console.log(data);
-        io.sockets.emit('ballData', data);
-        // socket.broadcast.emit('ballData', data);
+        // io.sockets.emit('ballData', data);
+        socket.broadcast.emit('ballData', data);
     });
 
     // Listen for this client to disconnect
