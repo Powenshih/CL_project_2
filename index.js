@@ -17,13 +17,17 @@ let io = require('socket.io').listen(server);
 // Listen for indivisual clinet/user to connect
 io.sockets.on('connect', function(socket) {
     console.log("A new client connected : " + socket.id);
+    socket.on('joined', () => {
+        let ballData = { data: joinBall }
+        io.sockets.emit('start the game', ballData);
+    });
 
     // Send the data to all the clients including this 
     // Set the name of the message to be ballData'
-    socket.on('ballData', (data) => {
+    socket.on('gameData', (data) => {
         console.log(data);
-        // io.sockets.emit('ballData', data);
-        socket.broadcast.emit('ballData', data);
+        // send data back excluding "this" player
+        socket.broadcast.emit('gameData', data);
     });
 
     // Listen for this client to disconnect
@@ -31,5 +35,37 @@ io.sockets.on('connect', function(socket) {
         console.log("A client has disconnected : " + socket.id);
     });
 
-
 });
+
+// let randomXspeed = Math.floor(Math.random() * (1 - (-1)));
+// let randomYspeed = Math.floor(Math.random() * (1 - (-1)));
+// let randomR = Math.floor(Math.random() * (50 - 100));
+
+// new code to make all the joining experience the same
+// create an onject send the object
+// let joinBall = [
+//     { x: 10, y: 737, r: 10, xspeed: randomXspeed, yspeed: randomYspeed },
+//     { x: 200, y: 522, r: 20, xspeed: randomXspeed, yspeed: randomYspeed },
+//     { x: 187, y: 15, r: 30, xspeed: randomXspeed, yspeed: randomYspeed },
+//     { x: 203, y: 148, r: 50, xspeed: randomXspeed, yspeed: randomYspeed },
+//     { x: 568, y: 595, r: 50, xspeed: randomXspeed, yspeed: randomYspeed },
+//     { x: 222, y: 886, r: 60, xspeed: randomXspeed, yspeed: randomYspeed },
+// ];
+
+let joinBall = [
+    { x: 10, y: 737, r: 37 },
+    { x: 200, y: 522, r: 80 },
+    { x: 187, y: 15, r: 120 },
+    { x: 203, y: 148, r: 60 },
+    { x: 568, y: 595, r: 50 },
+    { x: 600, y: 886, r: 70 },
+    { x: 800, y: 737, r: 12 },
+    { x: 25, y: 522, r: 200 },
+    { x: 187, y: 600, r: 94 },
+    { x: 357, y: 459, r: 12 },
+    { x: 481, y: 50, r: 45 },
+    { x: 922, y: 786, r: 150 },
+    { x: 735, y: 200, r: 30 },
+    { x: 481, y: 300, r: 45 },
+    { x: 900, y: 100, r: 100 }
+];
