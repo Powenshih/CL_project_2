@@ -2,19 +2,54 @@
 let socket = io();
 let balls = [];
 
+window.addEventListener('load', () => {
+    document.getElementById('easy').addEventListener('click', () => {
+        joinLevel('easy');
+    })
+    document.getElementById('hard').addEventListener('click', () => {
+        joinLevel('hard');
+    })
+
+    //when user types a new message and "sends" it
+    let sendbutton = document.getElementById('send-button');
+    sendbutton.addEventListener('click', () => {
+        let message = document.getElementById("my-message").value;
+        socket.emit('newmessage', {
+            message: message
+        })
+    })
+});
+
+function joinLevel(levelName) {
+    let data = {
+        level: levelName
+    }
+    socket.emit('joinLevel', data);
+}
+
+socket.on('levelMessages', (data) => {
+    console.log(data);
+    document.getElementById('messages').innerHTML = "";
+    for (let i = 0; i < data.messages.length; i++) {
+        let elt = document.createElement('p');
+        elt.innerHTML = data.messages[i];
+        document.getElementById('messages').appendChild(elt);
+
+    }
+})
+
 //Listen for confirmation of connection
-socket.on('connect', function() {
+socket.on('connect', () => {
     console.log("Connected");
     socket.emit('joined')
 });
 
 function setup() {
     createCanvas(1000, 1000);
-    background(random(100, 220));
+    // background(random(100, 220));
     socket.on('gameData', (data) => {
         console.log(data);
         removeBalls(data); // go to line 90
-
     });
 
     socket.on('start the game', (data) => {
@@ -22,39 +57,35 @@ function setup() {
         console.log(ballData);
         console.log(data);
         // new loop to circulate ballData[]
-        for (let i = 0; i < ballData.length; i++) {
-            console.log(i);
-            console.log(ballData[i].x);
-            let x = ballData[i].x;
-            let y = ballData[i].y;
-            let r = ballData[i].r;
-            // let b = new Ball(x, y, r, ballData[i].xspeed, ballData[i].yspeed)
+        for (let j = 0; j < ballData.length; j++) {
+            // console.log(i);
+            // console.log(ballData[i].x);
+            let x = ballData[j].x;
+            let y = ballData[j].y;
+            let r = ballData[j].r;
             let b = new Ball(x, y, r);
             balls.push(b);
-            // }
         }
 
     });
-    colorMode(HSB);
+    // colorMode(HSB);
 };
 
 function mouseDragged() {
 
-    for (let i = 0; i < balls.length; i++) {
+    for (let j = 0; j < balls.length; j++) {
         // this decremental loop is working too
         // for (let i = balls.length - 1; i >= 0; i--) {
-        if (balls[i].contains(mouseX, mouseY)) {
-            balls.splice(i, 1);
-            // PS:this is not working... wait... yes!! it's working with a decremental for loop!!! 7.5: Removing Objects from Arrays - p5.js Tutorial
+        if (balls[j].contains(mouseX, mouseY)) {
+            balls.splice(j, 1);
+
             ballLeft = balls.length;
-            ballSpliced = balls.length;
-
-
+            console.log(balls.length);
             let data = {
                 x: mouseX,
                 y: mouseY,
                 left: ballLeft,
-                kill: ballSpliced,
+                kill: 0,
             }
             socket.emit('gameData', data);
         }
@@ -63,7 +94,8 @@ function mouseDragged() {
 
 function draw() {
 
-    background(random(100, 220));
+    // background(random(100, 220));
+    background(255);
     for (let ball of balls) {
         if (ball.contains(mouseX, mouseY)) {
             ball.changeColor(255);
@@ -93,9 +125,8 @@ function draw() {
 
 function removeBalls(data) {
     // console.log(data);
-    if (balls.splice(balls.length - 1, 1)) {
-        kill++
-    }
+    balls.splice(balls.length - 1, 1);
+    data.kill++
 }
 
 // my ball DNA(class)
@@ -121,7 +152,7 @@ class Ball {
     show() {
         stroke(0);
         strokeWeight(1);
-        fill(this.brightness, 100);
+        fill(this.brightness, 200);
         ellipse(this.x, this.y, this.r * 2);
     }
 

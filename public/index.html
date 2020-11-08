@@ -4,11 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet">
     <title>Drawing with sockets and p5</title>
 </head>
 
 <body>
-    <h1>CL_project_2 Mysterious ball game</h1>
+    <h1>Ball Splicer Game</h1>
+    <h3>Select A Game Level and play!</h3>
+    <p>Once a level is chosen, an instructions will show up.</p>
+    <div>
+        <button id="easy"> EASY </button>
+        <button id="hard"> HARD </button>
+        <button id="play"> PLAY </button>
+        <button id="gift"> GIFT </button>
+        <button id="score"> SCORE </button>
+        <button id="time"> TIME </button>
+    </div>
+
+    <div id="level" class="level">
+        <div class="messages" id="messages"></div>
+        <div class="messages" id="newmessages"></div>
+        <div class="send-messages">
+            <button class="send-button" id="send-button"> Leave your comments</button>
+            <input class="send-input" id="my-message" type="text" placeholder="add your comments here" />
+        </div>
+    </div>
+
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
     <script src="app.js"></script>
