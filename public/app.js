@@ -1,6 +1,7 @@
 //Open and connect socket
 let socket = io();
 let balls = [];
+let ballKill = 0;
 
 window.addEventListener('load', () => {
     document.getElementById('easy').addEventListener('click', () => {
@@ -34,8 +35,14 @@ socket.on('levelMessages', (data) => {
         let elt = document.createElement('p');
         elt.innerHTML = data.messages[i];
         document.getElementById('messages').appendChild(elt);
-
     }
+    // undefined
+    let elt2 = document.createElement('p');
+    elt2.innerHTML = data.message;
+    document.getElementById('newmessages').appendChild(elt2);
+    let elt3 = document.createElement('p');
+    elt3.innerHTML = data.kill;
+    document.getElementById('scores').appendChild(elt3);
 })
 
 //Listen for confirmation of connection
@@ -49,17 +56,17 @@ function setup() {
     // background(random(100, 220));
     socket.on('gameData', (data) => {
         console.log(data);
-        removeBalls(data); // go to line 90
+        removeBalls(data); // go to line 129
     });
 
-    socket.on('start the game', (data) => {
+    socket.on('StartTheGame', (data) => {
         let ballData = data.data;
         console.log(ballData);
         console.log(data);
         // new loop to circulate ballData[]
+        balls = []; // go back to original state
         for (let j = 0; j < ballData.length; j++) {
-            // console.log(i);
-            // console.log(ballData[i].x);
+
             let x = ballData[j].x;
             let y = ballData[j].y;
             let r = ballData[j].r;
@@ -78,15 +85,17 @@ function mouseDragged() {
         // for (let i = balls.length - 1; i >= 0; i--) {
         if (balls[j].contains(mouseX, mouseY)) {
             balls.splice(j, 1);
-
             ballLeft = balls.length;
-            console.log(balls.length);
+            ballNumber = j;
+            ballKill++;
+
             let data = {
                 x: mouseX,
                 y: mouseY,
                 left: ballLeft,
-                kill: 0,
-            }
+                kill: ballKill,
+                Number: ballNumber,
+            };
             socket.emit('gameData', data);
         }
     }
@@ -95,7 +104,7 @@ function mouseDragged() {
 function draw() {
 
     // background(random(100, 220));
-    background(255);
+    background(0);
     for (let ball of balls) {
         if (ball.contains(mouseX, mouseY)) {
             ball.changeColor(255);
@@ -104,10 +113,17 @@ function draw() {
         }
         ball.move();
         ball.show();
-        if (balls.length <= 5) {
 
+        // if (ballKill++) {
+        //     push();
+        //     stroke(100, 200, 50);
+        //     strokeWeight(10);
+        //     pop();
+        // }
+
+        if (balls.length <= 5) {
             textSize(50);
-            fill(0);
+            fill(255, 235, 205);
             noStroke();
             textAlign(CENTER);
             text("YOU ARE ALMOST THERE!", 500, 500);
@@ -125,8 +141,9 @@ function draw() {
 
 function removeBalls(data) {
     // console.log(data);
-    balls.splice(balls.length - 1, 1);
-    data.kill++
+    balls.splice(data.Number, 1);
+    // console.log(data.ballNumber)
+
 }
 
 // my ball DNA(class)
@@ -136,23 +153,23 @@ class Ball {
         this.x = x;
         this.y = y;
         this.r = r;
-        this.brightness = 0;
+        this.brightness = random(100, 200);
         // this.xspeed = xspeed;
         // this.yspeed = yspeed;
     }
 
     move() {
-        this.x = this.x + random(5, -5);
-        this.y = this.y + random(5, -5);
+        this.x = this.x + random(2.5, -2.5);
+        this.y = this.y + random(2.5, -2.5);
         // this.x = this.x + this.xspeed;
         // this.y = this.y + this.yspeed;
         // console.log(this.yspeed);
     }
 
     show() {
-        stroke(0);
+        stroke(255);
         strokeWeight(1);
-        fill(this.brightness, 200);
+        fill(this.brightness, 150);
         ellipse(this.x, this.y, this.r * 2);
     }
 

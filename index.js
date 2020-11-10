@@ -53,7 +53,7 @@ io.sockets.on('connect', (socket) => {
             let ballData = { data: joinBall }
                 // io.sockets.emit('start the game', ballData);
                 // send the data just to the joined client
-            socket.emit('start the game', ballData);
+            socket.emit('StartTheGame', ballData);
         })
         //on getting a new message
     socket.on('newmessage', (data) => {
