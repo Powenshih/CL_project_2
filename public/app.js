@@ -1,7 +1,14 @@
 //Open and connect socket
 let socket = io();
 let balls = [];
-let ballKill = 0;
+let ballClear = 0;
+let readytoplay = false;
+
+//Listen for confirmation of connection
+socket.on('connect', () => {
+    console.log("Connected");
+    socket.emit('joined')
+});
 
 window.addEventListener('load', () => {
     document.getElementById('easy').addEventListener('click', () => {
@@ -21,44 +28,54 @@ window.addEventListener('load', () => {
     })
 });
 
-function joinLevel(levelName) {
+// JOIN LEVEL
+function joinLevel(levelData) {
     let data = {
-        level: levelName
+        level: levelData
     }
     socket.emit('joinLevel', data);
 }
 
+// SHOWING MESSAGE DATA
 socket.on('levelMessages', (data) => {
+    console.log('newmessages!');
     console.log(data);
+    console.log(data.newmessages);
     document.getElementById('messages').innerHTML = "";
     for (let i = 0; i < data.messages.length; i++) {
-        let elt = document.createElement('p');
+        let elt = document.createElement('h3');
         elt.innerHTML = data.messages[i];
         document.getElementById('messages').appendChild(elt);
     }
     // undefined
+    document.getElementById('newmessages').innerHTML = "";
     let elt2 = document.createElement('p');
-    elt2.innerHTML = data.message;
+    elt2.innerHTML = data.newmessages;
     document.getElementById('newmessages').appendChild(elt2);
-    let elt3 = document.createElement('p');
-    elt3.innerHTML = data.kill;
+
+    document.getElementById('scores').innerHTML = "";
+    let elt3 = document.createElement('h1');
+    elt3.id = 'scores';
+    elt3.innerHTML = data.scores;
     document.getElementById('scores').appendChild(elt3);
 })
 
-//Listen for confirmation of connection
-socket.on('connect', () => {
-    console.log("Connected");
-    socket.emit('joined')
-});
-
 function setup() {
-    createCanvas(1000, 1000);
-    // background(random(100, 220));
+    createCanvas(1200, 800);
+
+    // SEND UPDATE GAME DATA
     socket.on('gameData', (data) => {
         console.log(data);
-        removeBalls(data); // go to line 129
+        removeBalls(data);
+        // spliceInteraction(data);
     });
 
+    // SEND UPDATED SCORES
+    socket.on('newData', (data) => {
+        document.getElementById('scores').innerHTML = data.scores;
+    });
+
+    // GENERATE BALLS 
     socket.on('StartTheGame', (data) => {
         let ballData = data.data;
         console.log(ballData);
@@ -66,35 +83,31 @@ function setup() {
         // new loop to circulate ballData[]
         balls = []; // go back to original state
         for (let j = 0; j < ballData.length; j++) {
-
             let x = ballData[j].x;
             let y = ballData[j].y;
             let r = ballData[j].r;
             let b = new Ball(x, y, r);
             balls.push(b);
         }
-
     });
-    // colorMode(HSB);
 };
 
+// MOUSE DRAGGED INTERACTION
 function mouseDragged() {
 
     for (let j = 0; j < balls.length; j++) {
-        // this decremental loop is working too
-        // for (let i = balls.length - 1; i >= 0; i--) {
         if (balls[j].contains(mouseX, mouseY)) {
             balls.splice(j, 1);
             ballLeft = balls.length;
             ballNumber = j;
-            ballKill++;
+            ballClear++;
 
             let data = {
                 x: mouseX,
                 y: mouseY,
                 left: ballLeft,
-                kill: ballKill,
-                Number: ballNumber,
+                clear: ballClear,
+                ballNo: ballNumber,
             };
             socket.emit('gameData', data);
         }
@@ -103,9 +116,10 @@ function mouseDragged() {
 
 function draw() {
 
-    // background(random(100, 220));
     background(0);
+
     for (let ball of balls) {
+        readytoplay = true;
         if (ball.contains(mouseX, mouseY)) {
             ball.changeColor(255);
         } else {
@@ -113,35 +127,31 @@ function draw() {
         }
         ball.move();
         ball.show();
-
-        // if (ballKill++) {
-        //     push();
-        //     stroke(100, 200, 50);
-        //     strokeWeight(10);
-        //     pop();
-        // }
-
-        if (balls.length <= 5) {
-            textSize(50);
-            fill(255, 235, 205);
+        if (balls.length <= 6 && balls.length >= 3) {
+            textSize(20);
+            fill(200);
             noStroke();
             textAlign(CENTER);
-            text("YOU ARE ALMOST THERE!", 500, 500);
+            text("YOU ARE ALMOST THERE!", 600, 400);
         }
-        if (balls.length == 0) {
-            // this is not working as well
-            textSize(50);
-            fill(0);
-            noStroke();
-            textAlign(CENTER);
-            text("YOU WIN!", 500, 500);
-        }
+    }
+    if (balls.length < 3 && readytoplay) {
+        textSize(20);
+        fill(200);
+        noStroke();
+        textAlign(CENTER);
+        text("YOU GET TO THE HYDROTHERMAL VENT!", 600, 400);
     }
 };
 
+// let removal = false;
+// function spliceInteraction(data) {
+//     removal = true;
+// }
+
 function removeBalls(data) {
     // console.log(data);
-    balls.splice(data.Number, 1);
+    balls.splice(data.ballNo, 1);
     // console.log(data.ballNumber)
 
 }
@@ -167,10 +177,19 @@ class Ball {
     }
 
     show() {
+        // if (spliceInteraction()) {
+        // removal = true;
+        // stroke(255);
+        // strokeWeight(1);
+        // fill(50, 50, 200);
+        // ellipse(this.x, this.y, this.r * 3);
+        // noLoop();
+        // } else {
         stroke(255);
         strokeWeight(1);
         fill(this.brightness, 150);
         ellipse(this.x, this.y, this.r * 2);
+        // }
     }
 
     changeColor(bright) {
