@@ -11,11 +11,11 @@ socket.on('connect', () => {
 });
 
 window.addEventListener('load', () => {
-    document.getElementById('easy').addEventListener('click', () => {
-        joinLevel('easy');
+    document.getElementById('team').addEventListener('click', () => {
+        joinLevel('team');
     })
-    document.getElementById('hard').addEventListener('click', () => {
-        joinLevel('hard');
+    document.getElementById('versus').addEventListener('click', () => {
+        joinLevel('versus');
     })
 
     //when user types a new message and "sends" it
@@ -38,9 +38,9 @@ function joinLevel(levelData) {
 
 // SHOWING MESSAGE DATA
 socket.on('levelMessages', (data) => {
-    console.log('newmessages!');
-    console.log(data);
-    console.log(data.newmessages);
+    // console.log('newmessages!');
+    // console.log(data);
+    // console.log(data.newmessages);
     document.getElementById('messages').innerHTML = "";
     for (let i = 0; i < data.messages.length; i++) {
         let elt = document.createElement('h3');
@@ -53,11 +53,13 @@ socket.on('levelMessages', (data) => {
     elt2.innerHTML = data.newmessages;
     document.getElementById('newmessages').appendChild(elt2);
 
-    document.getElementById('scores').innerHTML = "";
-    let elt3 = document.createElement('h1');
-    elt3.id = 'scores';
-    elt3.innerHTML = data.scores;
-    document.getElementById('scores').appendChild(elt3);
+    document.getElementById('scoreIs').innerHTML = data.scoreIs;
+    document.getElementById('scores').innerHTML = data.scores;
+
+    // let elt3 = document.createElement('h1');
+    // elt3.id = 'scores';
+    // elt3.innerHTML = data.scores;
+    // document.getElementById('scores').appendChild(elt3);
 })
 
 function setup() {

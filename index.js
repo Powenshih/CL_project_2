@@ -6,11 +6,11 @@ let scores = 0;
 
 // instructional msg for levels
 let messages = {
-    "easy": [
+    "team": [
         "Great choice!, Here is how to play the game:",
         "Simply dragged you mouse and clear the balls to get to THE DEEP.",
     ],
-    "hard": [
+    "versus": [
         "Wow, you have advanced!, Here is how to play the game:",
         "Dragged and clear the balls to get to THE DEEP, Press GIFT button to add balls to oponents' canvas"
     ]
@@ -45,7 +45,8 @@ io.sockets.on('connect', (socket) => {
         // JONING MESSAGE DATA
         let messageData = {
             "messages": messages[levelData],
-            "scores": "Your score is:" + scores,
+            "scoreIs": "Your score is:",
+            "scores": scores,
             "newmessages": "New message from player 2:" + "Hi there",
         };
         socket.emit('levelMessages', messageData); // send the data only to this client

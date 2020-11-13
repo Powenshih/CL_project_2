@@ -14,21 +14,23 @@
     <P>Is it possible to get there? I asked myself. In fact, More people have traveled into space than have traveled to the deep ocean realm…. </p>
     <h3>Select a Game Level and play!</h3>
     <div>
-        <button id="easy"> EASY </button>
-        <button id="hard"> HARD </button>
-        <button id="add"> ADD BALLS </button>
-        <button id="scorerank"> SCORE RANK </button>
-        <button id="newgame"> NEW GAME </button>
+        <button id="team"> TEAM PLAY </button>
+        <button id="versus"> VERSUS </button>
+        <!-- <button id="add"> ADD BALLS </button>
+        <button id="scorerank"> SCORE RANK </button> -->
+        <!-- <button id="newgame"> NEW GAME </button> -->
+        <button class="send-button" id="send-button"> SAY HELLO</button>
+        <input class="send-input" id="my-message" type="text" placeholder="leave your comments here" />
     </div>
 
     <div id="level" class="level">
         <div class="messages" id="messages"></div>
         <div class="messages" id="newmessages"></div>
-        <div class="messages" id="scores"></div>
-        <div class="send-messages">
-            <button class="send-button" id="send-button"> SAY HELLO</button>
-            <input class="send-input" id="my-message" type="text" placeholder="leave your comments here" />
+        <div class="messages" id="scores">
+            <span id="scoreIs"></span>
+            <span id="scores"></span>
         </div>
+        <div class="send-messages"></div>
     </div>
 
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
