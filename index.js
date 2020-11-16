@@ -45,9 +45,9 @@ io.sockets.on('connect', (socket) => {
         // JOINING MESSAGE DATA
         let messageData = {
             "messages": messages[levelData],
-            "scoreIs": "Your score is:",
-            "scores": scores,
-            "newMsg": "New message from player 2:" + "Hi there",
+            "score1": "Great, together you have cleared",
+            "score2": scores,
+            "score3": "balls, you are getting closer to the deep!",
         };
         socket.emit('levelMessages', messageData); // send the data only to this client
 

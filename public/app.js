@@ -50,8 +50,9 @@ socket.on('levelMessages', (data) => {
     }
     // undefined
 
-    document.getElementById('scoreIs').innerHTML = data.scoreIs;
-    document.getElementById('scores').innerHTML = data.scores;
+    document.getElementById('score1').innerHTML = data.score1;
+    document.getElementById('score2').innerHTML = data.score2;
+    document.getElementById('score3').innerHTML = data.score3;
 
     // let elt3 = document.createElement('h1');
     // elt3.id = 'scores';
@@ -74,12 +75,12 @@ function setup() {
     socket.on('gameData', (data) => {
         console.log(data);
         removeBalls(data);
-        // spliceInteraction(data);
+        spliceInteraction(data);
     });
 
     // SEND UPDATED SCORES
     socket.on('newData', (data) => {
-        document.getElementById('scores').innerHTML = data.scores;
+        document.getElementById('score2').innerHTML = data.scores;
     });
 
     // GENERATE BALLS 
@@ -151,17 +152,26 @@ function draw() {
     }
 };
 
-// let removal = false;
-// function spliceInteraction(data) {
-//     removal = true;
-// }
-
 function removeBalls(data) {
     // console.log(data);
     balls.splice(data.ballNo, 1);
     // console.log(data.ballNumber)
 
 }
+
+let removal = false
+
+function spliceInteraction(data) {
+    removal = true;
+    console.log(balls);
+    for (let j = 0; j < balls.length; j++) {
+        console.log(balls[i]);
+        // balls[i].r += 10;
+        // balls[i].update();
+    }
+}
+
+
 
 // my ball DNA(class)
 class Ball {
@@ -183,17 +193,27 @@ class Ball {
         // console.log(this.yspeed);
     }
 
-    show() {
-        // if (spliceInteraction()) {
-        // removal = true;
-        // stroke(255);
-        // strokeWeight(1);
-        // fill(50, 50, 200);
-        // ellipse(this.x, this.y, this.r * 3);
-        // noLoop();
-        // } else {
+    update() {
+        removal = true;
         stroke(255);
         strokeWeight(1);
+        fill(50, 50, 200);
+        ellipse(this.x, this.y, this.r * 3);
+        noLoop();
+    }
+
+    show() {
+
+        // if (spliceInteraction(data)) {
+        //     removal = true;
+        //     stroke(255);
+        //     strokeWeight(1);
+        //     fill(50, 50, 200);
+        //     ellipse(this.x, this.y, this.r * 3);
+        //     noLoop();
+        // } else {
+        stroke(255);
+        strokeWeight(1.5);
         fill(this.brightness, 150);
         ellipse(this.x, this.y, this.r * 2);
         // }
