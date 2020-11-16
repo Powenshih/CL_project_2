@@ -22,7 +22,8 @@ window.addEventListener('load', () => {
     let sendbutton = document.getElementById('send-button');
     sendbutton.addEventListener('click', () => {
         let message = document.getElementById("my-message").value;
-        socket.emit('newmessage', {
+        console.log(message);
+        socket.emit('newMsg', {
             message: message
         })
     })
@@ -38,9 +39,9 @@ function joinLevel(levelData) {
 
 // SHOWING MESSAGE DATA
 socket.on('levelMessages', (data) => {
-    // console.log('newmessages!');
+    // console.log('newMsgs!');
     // console.log(data);
-    // console.log(data.newmessages);
+    // console.log(data.newMsgs);
     document.getElementById('messages').innerHTML = "";
     for (let i = 0; i < data.messages.length; i++) {
         let elt = document.createElement('h3');
@@ -48,10 +49,6 @@ socket.on('levelMessages', (data) => {
         document.getElementById('messages').appendChild(elt);
     }
     // undefined
-    document.getElementById('newmessages').innerHTML = "";
-    let elt2 = document.createElement('p');
-    elt2.innerHTML = data.newmessages;
-    document.getElementById('newmessages').appendChild(elt2);
 
     document.getElementById('scoreIs').innerHTML = data.scoreIs;
     document.getElementById('scores').innerHTML = data.scores;
@@ -60,6 +57,14 @@ socket.on('levelMessages', (data) => {
     // elt3.id = 'scores';
     // elt3.innerHTML = data.scores;
     // document.getElementById('scores').appendChild(elt3);
+})
+
+socket.on('newMsg', (data) => {
+    document.getElementById('newMsgs').innerHTML = "";
+    let elt2 = document.createElement('p');
+    elt2.innerHTML = data.message;
+    document.getElementById('newMsgs').appendChild(elt2);
+    console.log(data);
 })
 
 function setup() {
@@ -78,7 +83,7 @@ function setup() {
     });
 
     // GENERATE BALLS 
-    socket.on('StartTheGame', (data) => {
+    socket.on('gameStart', (data) => {
         let ballData = data.data;
         console.log(ballData);
         console.log(data);

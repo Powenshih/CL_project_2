@@ -12,7 +12,7 @@ let messages = {
     ],
     "versus": [
         "Wow, you have advanced!, Here is how to play the game:",
-        "Dragged and clear the balls to get to THE DEEP, Press GIFT button to add balls to oponents' canvas"
+        "Dragged and clear the balls to get to THE DEEP, Press GIFT button to add balls to opponents' canvas"
     ]
 }
 
@@ -29,7 +29,7 @@ server.listen(port, () => {
 // Initialize socket.io
 let io = require('socket.io').listen(server);
 
-// Listen for indivisual clinet/user to connect
+// Listen for individual client/user to connect
 io.sockets.on('connect', (socket) => {
     console.log("A new client connected : " + socket.id);
 
@@ -42,24 +42,25 @@ io.sockets.on('connect', (socket) => {
         socket.join(levelData);
         socket.levelData = levelData
 
-        // JONING MESSAGE DATA
+        // JOINING MESSAGE DATA
         let messageData = {
             "messages": messages[levelData],
             "scoreIs": "Your score is:",
             "scores": scores,
-            "newmessages": "New message from player 2:" + "Hi there",
+            "newMsg": "New message from player 2:" + "Hi there",
         };
         socket.emit('levelMessages', messageData); // send the data only to this client
 
         // JOINING BALL DATA --> line 89
         let ballData = { data: joinBall };
-        socket.emit('StartTheGame', ballData); // send the data only to this client
+        socket.emit('gameStart', ballData); // send the data only to this client
 
     });
 
     // On getting a NEW MESSAGE
-    socket.on('newmessage', (data) => {
-        io.to(socket.levelData).emit('newmessage', data);
+    socket.on('newMsg', (data) => {
+        // io.to(socket.levelData).emit('newMsg', data);
+        io.sockets.emit('newMsg', data);
         messages[socket.levelData].push(data.message);
         console.log(messages);
     });
@@ -71,8 +72,8 @@ io.sockets.on('connect', (socket) => {
 
         // UPDATE NEW SCORE (HOW MANY BALLS ARE CLEARED)
         scores++;
-        let newData = { "clientData": data, "score": scores };
-        socket.emit('newData', newData);
+        let newData = { "clientData": data, "scores": scores };
+        io.sockets.emit('newData', newData);
     });
 
     // Listen for this client to disconnect
