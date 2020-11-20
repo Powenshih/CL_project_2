@@ -3,6 +3,7 @@ let socket = io();
 let balls = [];
 let ballClear = 0;
 let readytoplay = false;
+let removal = false;
 
 //Listen for confirmation of connection
 socket.on('connect', () => {
@@ -39,25 +40,17 @@ function joinLevel(levelData) {
 
 // SHOWING MESSAGE DATA
 socket.on('levelMessages', (data) => {
-    // console.log('newMsgs!');
-    // console.log(data);
-    // console.log(data.newMsgs);
     document.getElementById('messages').innerHTML = "";
     for (let i = 0; i < data.messages.length; i++) {
         let elt = document.createElement('h3');
         elt.innerHTML = data.messages[i];
         document.getElementById('messages').appendChild(elt);
     }
-    // undefined
 
     document.getElementById('score1').innerHTML = data.score1;
     document.getElementById('score2').innerHTML = data.score2;
     document.getElementById('score3').innerHTML = data.score3;
 
-    // let elt3 = document.createElement('h1');
-    // elt3.id = 'scores';
-    // elt3.innerHTML = data.scores;
-    // document.getElementById('scores').appendChild(elt3);
 })
 
 socket.on('newMsg', (data) => {
@@ -75,7 +68,6 @@ function setup() {
     socket.on('gameData', (data) => {
         console.log(data);
         removeBalls(data);
-        spliceInteraction(data);
     });
 
     // SEND UPDATED SCORES
@@ -155,21 +147,21 @@ function draw() {
 function removeBalls(data) {
     // console.log(data);
     balls.splice(data.ballNo, 1);
-    // console.log(data.ballNumber)
-
-}
-
-let removal = false
-
-function spliceInteraction(data) {
     removal = true;
-    console.log(balls);
-    for (let j = 0; j < balls.length; j++) {
-        console.log(balls[i]);
-        // balls[i].r += 10;
-        // balls[i].update();
-    }
 }
+
+// let removal = false
+
+// function spliceInteraction(data) {
+//     removal = true;
+//     console.log(balls);
+//     for (let j = 0; j < balls.length; j++) {
+//         console.log(balls[i]);
+//         // balls[i].r += 10;
+//         // balls[i].update();
+//     }
+// }
+
 
 
 
@@ -181,6 +173,7 @@ class Ball {
         this.y = y;
         this.r = r;
         this.brightness = random(100, 200);
+        // this.removal = removal;
         // this.xspeed = xspeed;
         // this.yspeed = yspeed;
     }
@@ -193,30 +186,48 @@ class Ball {
         // console.log(this.yspeed);
     }
 
-    update() {
-        removal = true;
-        stroke(255);
-        strokeWeight(1);
-        fill(50, 50, 200);
-        ellipse(this.x, this.y, this.r * 3);
-        noLoop();
-    }
+    // Nov 13rd Ruta's connection lad work session
+    // update() {
+    //     removal = true;
+    //     stroke(255);
+    //     strokeWeight(1);
+    //     fill(50, 50, 200);
+    //     ellipse(this.x, this.y, this.r * 3);
+    //     noLoop();
+    // }
 
     show() {
-
-        // if (spliceInteraction(data)) {
-        //     removal = true;
-        //     stroke(255);
-        //     strokeWeight(1);
-        //     fill(50, 50, 200);
-        //     ellipse(this.x, this.y, this.r * 3);
-        //     noLoop();
-        // } else {
+        console.log('show balls')
         stroke(255);
         strokeWeight(1.5);
-        fill(this.brightness, 150);
+        fill(this.brightness, 200);
         ellipse(this.x, this.y, this.r * 2);
-        // }
+
+        if (ballClear > 0 && removal) {
+            // this.removal = true;
+            console.log(removal);
+
+            // setTimetout(function() {
+
+            console.log("Splice the ball!");
+            stroke(255);
+            strokeWeight(3);
+            fill(100, 200, 150);
+            ellipse(this.x, this.y, this.r * 2);
+
+            // }, 1000)
+
+
+            //     this.caught = false;
+            // if (spliceInteraction(data)) {
+            //     removal = true;
+            //     stroke(255);
+            //     strokeWeight(1);
+            //     fill(50, 50, 200);
+            //     ellipse(this.x, this.y, this.r * 3);
+            //     noLoop();
+            // } else {
+        }
     }
 
     changeColor(bright) {
