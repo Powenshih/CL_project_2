@@ -5,6 +5,14 @@ let ballClear = 0;
 let readytoplay = false;
 let removal = false;
 
+// glowing orb with this / pixelDensity ? by Ivy Meadows https://editor.p5js.org/ivymeadows/sketches/Hy_11EQWG
+
+let img;
+
+function preload() {
+    img = loadImage("Treasure_and_Turmoil_low.jpg");
+}
+
 //Listen for confirmation of connection
 socket.on('connect', () => {
     console.log("Connected");
@@ -12,17 +20,17 @@ socket.on('connect', () => {
 });
 
 window.addEventListener('load', () => {
-    document.getElementById('team').addEventListener('click', () => {
-        joinLevel('team');
+    document.getElementById('team-play').addEventListener('click', () => {
+        joinLevel('team-play');
     })
-    document.getElementById('versus').addEventListener('click', () => {
-        joinLevel('versus');
+    document.getElementById('versus-play').addEventListener('click', () => {
+        joinLevel('versus-play');
     })
 
     //when user types a new message and "sends" it
     let sendbutton = document.getElementById('send-button');
     sendbutton.addEventListener('click', () => {
-        let message = document.getElementById("my-message").value;
+        let message = document.getElementById("send-input").value;
         console.log(message);
         socket.emit('newMsg', {
             message: message
@@ -39,30 +47,35 @@ function joinLevel(levelData) {
 }
 
 // SHOWING MESSAGE DATA
-socket.on('levelMessages', (data) => {
-    document.getElementById('messages').innerHTML = "";
+socket.on('levelMsg', (data) => {
+    document.getElementById('level-msg').innerHTML = "";
     for (let i = 0; i < data.messages.length; i++) {
         let elt = document.createElement('h3');
         elt.innerHTML = data.messages[i];
-        document.getElementById('messages').appendChild(elt);
+        document.getElementById('level-msg').appendChild(elt);
     }
 
     document.getElementById('score1').innerHTML = data.score1;
-    document.getElementById('score2').innerHTML = data.score2;
+    document.getElementById('scoreNum').innerHTML = data.score2;
     document.getElementById('score3').innerHTML = data.score3;
 
 })
 
 socket.on('newMsg', (data) => {
-    document.getElementById('newMsgs').innerHTML = "";
+    document.getElementById('new-msg').innerHTML = "";
     let elt2 = document.createElement('p');
     elt2.innerHTML = data.message;
-    document.getElementById('newMsgs').appendChild(elt2);
+    document.getElementById('new-msg').appendChild(elt2);
     console.log(data);
 })
 
 function setup() {
-    createCanvas(1200, 800);
+    createCanvas(1692, 2048);
+
+    // createCanvas(720, 200);
+    pixelDensity(1);
+    img.loadPixels();
+    loadPixels();
 
     // SEND UPDATE GAME DATA
     socket.on('gameData', (data) => {
@@ -72,7 +85,7 @@ function setup() {
 
     // SEND UPDATED SCORES
     socket.on('newData', (data) => {
-        document.getElementById('score2').innerHTML = data.scores;
+        document.getElementById('scoreNum').innerHTML = data.scores;
     });
 
     // GENERATE BALLS 
@@ -109,6 +122,7 @@ function mouseDragged() {
                 clear: ballClear,
                 ballNo: ballNumber,
             };
+            // for the two games this can be different
             socket.emit('gameData', data);
         }
     }
@@ -117,6 +131,31 @@ function mouseDragged() {
 function draw() {
 
     background(0);
+
+    for (let x = 0; x < img.width; x++) {
+        for (let y = 0; y < img.height; y++) {
+            // Calculate the 1D location from a 2D grid
+            let loc = (x + y * img.width) * 4;
+            // Get the R,G,B values from image
+            let r, g, b;
+            r = img.pixels[loc];
+            // Calculate an amount to change brightness based on proximity to the mouse
+            let maxdist = 25;
+            let d = dist(x, y, mouseX, mouseY);
+            let adjustbrightness = 100 * (maxdist - d) / maxdist;
+            r += adjustbrightness;
+            // Constrain RGB to make sure they are within 0-255 color range
+            r = constrain(r, 0, 255);
+            // Make a new color and set pixel in the window
+            let c = color(r, g, b);
+            let pixloc = (y * width + x) * 4;
+            pixels[pixloc] = r;
+            pixels[pixloc + 1] = r;
+            pixels[pixloc + 2] = r;
+            pixels[pixloc + 3] = 255;
+        }
+    }
+    updatePixels();
 
     for (let ball of balls) {
         readytoplay = true;
@@ -203,31 +242,31 @@ class Ball {
         fill(this.brightness, 200);
         ellipse(this.x, this.y, this.r * 2);
 
-        if (ballClear > 0 && removal) {
-            // this.removal = true;
-            console.log(removal);
+        // if (ballClear > 0 && removal) {
+        //     // this.removal = true;
+        //     console.log(removal);
 
-            // setTimetout(function() {
+        //     // setTimetout(function() {
 
-            console.log("Splice the ball!");
-            stroke(255);
-            strokeWeight(3);
-            fill(100, 200, 150);
-            ellipse(this.x, this.y, this.r * 2);
+        //     console.log("Splice the ball!");
+        //     stroke(255);
+        //     strokeWeight(3);
+        //     fill(100, 200, 150);
+        //     ellipse(this.x, this.y, this.r * 2);
 
-            // }, 1000)
+        //     // }, 1000)
 
 
-            //     this.caught = false;
-            // if (spliceInteraction(data)) {
-            //     removal = true;
-            //     stroke(255);
-            //     strokeWeight(1);
-            //     fill(50, 50, 200);
-            //     ellipse(this.x, this.y, this.r * 3);
-            //     noLoop();
-            // } else {
-        }
+        //     //     this.caught = false;
+        //     // if (spliceInteraction(data)) {
+        //     //     removal = true;
+        //     //     stroke(255);
+        //     //     strokeWeight(1);
+        //     //     fill(50, 50, 200);
+        //     //     ellipse(this.x, this.y, this.r * 3);
+        //     //     noLoop();
+        //     // } else {
+        // }
     }
 
     changeColor(bright) {

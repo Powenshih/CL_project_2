@@ -1,16 +1,16 @@
 // Initialize the express 'app' object
 let express = require('express');
 let app = express();
-let levels = ["easy", "hard"];
+// let levels = ["team-play", "versus-play"];
 let scores = 0;
 
 // instructional msg for levels
 let messages = {
-    "team": [
+    "team-play": [
         "Great choice!, Here is how to play the game:",
         "Simply dragged you mouse and clear the balls to get to THE DEEP.",
     ],
-    "versus": [
+    "versus-play": [
         "Wow, you have advanced!, Here is how to play the game:",
         "Dragged and clear the balls to get to THE DEEP, Press GIFT button to add balls to opponents' canvas"
     ]
@@ -49,7 +49,7 @@ io.sockets.on('connect', (socket) => {
             "score2": scores,
             "score3": "balls, you are getting closer to the deep!",
         };
-        socket.emit('levelMessages', messageData); // send the data only to this client
+        socket.emit('levelMsg', messageData); // send the data only to this client
 
         // JOINING BALL DATA --> line 89
         let ballData = { data: joinBall };
