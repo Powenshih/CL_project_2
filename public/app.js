@@ -7,11 +7,11 @@ let removal = false;
 
 // glowing orb with this / pixelDensity ? by Ivy Meadows https://editor.p5js.org/ivymeadows/sketches/Hy_11EQWG
 
-let img;
+// let img;
 
-function preload() {
-    img = loadImage("Treasure_and_Turmoil_low.jpg");
-}
+// function preload() {
+//     img = loadImage("Treasure_and_Turmoil_low.jpg");
+// }
 
 //Listen for confirmation of connection
 socket.on('connect', () => {
@@ -69,13 +69,26 @@ socket.on('newMsg', (data) => {
     console.log(data);
 })
 
-function setup() {
-    createCanvas(1692, 2048);
+socket.on('removeData', () => {
+    console.log(balls)
+    for (let k = 0; k < balls.length; k++) {
+        // if (ball.contains(mouseX, mouseY)) {
+        //     ball[k].changeColor();
+        // }
+        balls[k].swell();
+        setTimeout(function() {
+            balls[k].shrink();
+        }, 500);
+    }
+})
 
-    // createCanvas(720, 200);
-    pixelDensity(1);
-    img.loadPixels();
-    loadPixels();
+function setup() {
+    createCanvas(2000, 2000);
+
+    // // createCanvas(720, 200);
+    // pixelDensity(1);
+    // img.loadPixels();
+    // loadPixels();
 
     // SEND UPDATE GAME DATA
     socket.on('gameData', (data) => {
@@ -105,6 +118,73 @@ function setup() {
     });
 };
 
+function draw() {
+
+    background(0);
+    fill(255);
+    ellipse(20, 20, 40);
+    ellipse(1980, 1980, 40);
+    ellipse(20, 1980, 40);
+    ellipse(1980, 20, 40);
+
+    // for (let x = 0; x < img.width; x++) {
+    //     for (let y = 0; y < img.height; y++) {
+    //         // Calculate the 1D location from a 2D grid
+    //         let loc = (x + y * img.width) * 4;
+    //         // Get the R,G,B values from image
+    //         let r, g, b;
+    //         r = img.pixels[loc];
+    //         // Calculate an amount to change brightness based on proximity to the mouse
+    //         let maxdist = 25;
+    //         let d = dist(x, y, mouseX, mouseY);
+    //         let adjustbrightness = 100 * (maxdist - d) / maxdist;
+    //         r += adjustbrightness;
+    //         // Constrain RGB to make sure they are within 0-255 color range
+    //         r = constrain(r, 0, 255);
+    //         // Make a new color and set pixel in the window
+    //         let c = color(r, g, b);
+    //         let pixloc = (y * width + x) * 4;
+    //         pixels[pixloc] = r;
+    //         pixels[pixloc + 1] = r;
+    //         pixels[pixloc + 2] = r;
+    //         pixels[pixloc + 3] = 255;
+    //     }
+    // }
+    // updatePixels();
+
+    for (let ball of balls) {
+        readytoplay = true;
+        if (ball.contains(mouseX, mouseY)) {
+            ball.changeColor(255);
+        } else {
+            ball.changeColor(0);
+        }
+        ball.move();
+        ball.show();
+        if (readytoplay && balls.length >= 20) {
+            textSize(50);
+            fill(200);
+            noStroke();
+            textAlign(CENTER);
+            text("NAVIGATE TO FIND BALLS", 1000, 1000);
+        }
+        if (balls.length <= 6 && balls.length >= 3) {
+            textSize(50);
+            fill(200);
+            noStroke();
+            textAlign(CENTER);
+            text("WE ARE ALMOST THERE!", 1000, 1000);
+        }
+    }
+    if (balls.length < 3 && readytoplay) {
+        textSize(50);
+        fill(200);
+        noStroke();
+        textAlign(CENTER);
+        text("YOU BRING US TO THE HYDROTHERMAL VENT!", 1000, 1000);
+    }
+};
+
 // MOUSE DRAGGED INTERACTION
 function mouseDragged() {
 
@@ -124,62 +204,10 @@ function mouseDragged() {
             };
             // for the two games this can be different
             socket.emit('gameData', data);
-        }
-    }
-};
 
-function draw() {
-
-    background(0);
-
-    for (let x = 0; x < img.width; x++) {
-        for (let y = 0; y < img.height; y++) {
-            // Calculate the 1D location from a 2D grid
-            let loc = (x + y * img.width) * 4;
-            // Get the R,G,B values from image
-            let r, g, b;
-            r = img.pixels[loc];
-            // Calculate an amount to change brightness based on proximity to the mouse
-            let maxdist = 25;
-            let d = dist(x, y, mouseX, mouseY);
-            let adjustbrightness = 100 * (maxdist - d) / maxdist;
-            r += adjustbrightness;
-            // Constrain RGB to make sure they are within 0-255 color range
-            r = constrain(r, 0, 255);
-            // Make a new color and set pixel in the window
-            let c = color(r, g, b);
-            let pixloc = (y * width + x) * 4;
-            pixels[pixloc] = r;
-            pixels[pixloc + 1] = r;
-            pixels[pixloc + 2] = r;
-            pixels[pixloc + 3] = 255;
+            // 1 there will another socket emit ...
+            socket.emit('removeData');
         }
-    }
-    updatePixels();
-
-    for (let ball of balls) {
-        readytoplay = true;
-        if (ball.contains(mouseX, mouseY)) {
-            ball.changeColor(255);
-        } else {
-            ball.changeColor(0);
-        }
-        ball.move();
-        ball.show();
-        if (balls.length <= 6 && balls.length >= 3) {
-            textSize(20);
-            fill(200);
-            noStroke();
-            textAlign(CENTER);
-            text("YOU ARE ALMOST THERE!", 600, 400);
-        }
-    }
-    if (balls.length < 3 && readytoplay) {
-        textSize(20);
-        fill(200);
-        noStroke();
-        textAlign(CENTER);
-        text("YOU GET TO THE HYDROTHERMAL VENT!", 600, 400);
     }
 };
 
@@ -189,21 +217,6 @@ function removeBalls(data) {
     removal = true;
 }
 
-// let removal = false
-
-// function spliceInteraction(data) {
-//     removal = true;
-//     console.log(balls);
-//     for (let j = 0; j < balls.length; j++) {
-//         console.log(balls[i]);
-//         // balls[i].r += 10;
-//         // balls[i].update();
-//     }
-// }
-
-
-
-
 // my ball DNA(class)
 class Ball {
     // constructor(x, y, r, xspeed, yspeed) {
@@ -211,62 +224,55 @@ class Ball {
         this.x = x;
         this.y = y;
         this.r = r;
+        this.a = random(255);
         this.brightness = random(100, 200);
+        this.strokeR = 255;
+        this.strokeG = 255;
+        this.strokeB = 255;
+        this.strokeA = random(255);
+        this.strokeWeight = 0;
         // this.removal = removal;
         // this.xspeed = xspeed;
         // this.yspeed = yspeed;
     }
 
+    swell() {
+        this.a += 50;
+        this.r += 10;
+        this.strokeWeight += random(10);
+        this.strokeR -= random(255);
+        this.strokeG -= random(100);
+        this.strokeB -= random(50);
+        // this.stroke = color(0, 0, 255);
+        // this.strokeWeight = strokeWeight(10);
+    }
+
+    shrink() {
+        this.a -= 50;
+        this.r -= 10;
+        this.strokeWeight = 0;
+        this.strokeR = 255;
+        this.strokeG = 255;
+        this.strokeB = 255;
+        this.strokeA = random(255);
+        // this.stroke = color(255);
+        // this.strokeWeight = strokeWeight(1.5);
+    }
+
+    show() {
+        console.log('show balls');
+        stroke(this.strokeR, this.strokeG, this.strokeB, this.strokeA);
+        strokeWeight(this.strokeWeight);
+        fill(this.brightness, this.a);
+        ellipse(this.x * 3, this.y * 3, this.r * 3);
+    }
+
     move() {
-        this.x = this.x + random(2.5, -2.5);
-        this.y = this.y + random(2.5, -2.5);
+        this.x += random(1, -1);
+        this.y += random(1, -1);
         // this.x = this.x + this.xspeed;
         // this.y = this.y + this.yspeed;
         // console.log(this.yspeed);
-    }
-
-    // Nov 13rd Ruta's connection lad work session
-    // update() {
-    //     removal = true;
-    //     stroke(255);
-    //     strokeWeight(1);
-    //     fill(50, 50, 200);
-    //     ellipse(this.x, this.y, this.r * 3);
-    //     noLoop();
-    // }
-
-    show() {
-        console.log('show balls')
-        stroke(255);
-        strokeWeight(1.5);
-        fill(this.brightness, 200);
-        ellipse(this.x, this.y, this.r * 2);
-
-        // if (ballClear > 0 && removal) {
-        //     // this.removal = true;
-        //     console.log(removal);
-
-        //     // setTimetout(function() {
-
-        //     console.log("Splice the ball!");
-        //     stroke(255);
-        //     strokeWeight(3);
-        //     fill(100, 200, 150);
-        //     ellipse(this.x, this.y, this.r * 2);
-
-        //     // }, 1000)
-
-
-        //     //     this.caught = false;
-        //     // if (spliceInteraction(data)) {
-        //     //     removal = true;
-        //     //     stroke(255);
-        //     //     strokeWeight(1);
-        //     //     fill(50, 50, 200);
-        //     //     ellipse(this.x, this.y, this.r * 3);
-        //     //     noLoop();
-        //     // } else {
-        // }
     }
 
     changeColor(bright) {
@@ -274,8 +280,8 @@ class Ball {
     }
 
     contains(containedX, containedY) {
-        let d = dist(containedX, containedY, this.x, this.y);
-        if (d < this.r) {
+        let d = dist(containedX, containedY, this.x * 3, this.y * 3);
+        if (d < this.r * 1.5) {
             // console.log("ball clicked");
             return true;
         } else {
