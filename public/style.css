@@ -17,8 +17,17 @@ body {
     align-items: center;
 }
 
+#send-input {
+    font-size: 25px;
+    height: 100px;
+    width: 300px;
+    border: 7px solid rgb(230, 195, 0);
+}
+
 #game-desc {
-    font-size: 35px;
+    padding-left: 500px;
+    padding-right: 500px;
+    font-size: 44px;
     color: rgb(240, 240, 240);
     display: flex;
     flex-direction: column;
@@ -27,10 +36,21 @@ body {
 
 .sub-container {
     /* margin: 50px; */
-    padding: 20px 450px 20px;
+    padding: 10px 200px 10px;
+    margin: 0px;
+    /* padding: 750px 450px 20px; */
     display: flex;
     flex-direction: column;
     align-items: left;
+}
+
+.game-level {
+    padding-left: 500px;
+    padding-right: 500px;
+}
+
+.game-msg {
+    font-size: 35px;
 }
 
 .chat {
@@ -46,12 +66,12 @@ body {
 }
 
 button {
-    height: 50px;
-    width: 200px;
-    border: 7px solid rgb(100, 100, 100);
-    padding: 20px;
+    height: 100px;
+    width: 300px;
+    border: 7px solid rgb(47, 17, 214);
+    /* padding: 20px; */
     /* text-align: center; */
-    font-size: 15px;
+    font-size: 30px;
 }
 
 #scoreNum {
@@ -68,3 +88,11 @@ button {
     height: 30px;
     width: 200px;
 }
+
+
+/* p5.canvas {
+    background-size: cover;
+    Position: fixed;
+    Top: 0;
+    Left: 0;
+} */

@@ -13,7 +13,7 @@
 <body>
     <div class="container">
 
-        <h1 id="game-title">ENTERING TO THE DEEP</h1>
+        <h1 id="game-title">E N T E R I N G T O T H E D E E P</h1>
         <p id="game-desc">A place of cold and hot, dark and high pressure. What is it like to be in the deep sea and… Is it possible to get there? I asked myself. In fact, More people have traveled into space than have traveled to the deep ocean realm…
         </p>
 
@@ -29,21 +29,23 @@
             </div>
 
             <div class="level-chat" id="level-chat">
-                <button class="send-button" id="send-button"> SEND MESSAGE </button>
                 <input class="send-input" id="send-input" placeholder="leave your comments here" />
+                <button class="send-button" id="send-button"> SEND MESSAGE </button>
+            </div>
+
+            <div class="game-msg" id="game-msg">
+                <div class="level-msg" id="level-msg">Select a Game Level and play!</div>
+                <div class="new-msg" id="new-msg"></div>
+                <span id="score1"></span>
+                <span id="scoreNum"></span>
+                <span id="score3"></span>
             </div>
 
         </div>
 
     </div>
 
-    <div class="game-msg" id="game-msg">
-        <div class="level-msg" id="level-msg">Select a Game Level and play!</div>
-        <div class="new-msg" id="new-msg"></div>
-        <span id="score1"></span>
-        <span id="scoreNum"></span>
-        <span id="score3"></span>
-    </div>
+
     </div>
 
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>

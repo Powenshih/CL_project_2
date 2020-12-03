@@ -7,11 +7,12 @@ let removal = false;
 
 // glowing orb with this / pixelDensity ? by Ivy Meadows https://editor.p5js.org/ivymeadows/sketches/Hy_11EQWG
 
-// let img;
+let img;
 
-// function preload() {
-//     img = loadImage("Treasure_and_Turmoil_low.jpg");
-// }
+function preload() {
+    img = loadImage("Treasure_and_Turmoil_2k.jpg");
+    // img2 = loadImage("Treasure_and_Turmoil_low.jpg");
+}
 
 //Listen for confirmation of connection
 socket.on('connect', () => {
@@ -78,17 +79,14 @@ socket.on('removeData', () => {
         balls[k].swell();
         setTimeout(function() {
             balls[k].shrink();
-        }, 500);
+        }, 250);
     }
 })
 
-function setup() {
-    createCanvas(2000, 2000);
 
-    // // createCanvas(720, 200);
-    // pixelDensity(1);
-    // img.loadPixels();
-    // loadPixels();
+function setup() {
+    createCanvas(windowWidth, windowHeight);
+    angleMode(DEGREES);
 
     // SEND UPDATE GAME DATA
     socket.on('gameData', (data) => {
@@ -118,49 +116,44 @@ function setup() {
     });
 };
 
+// resize canvas
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+}
+
 function draw() {
 
     background(0);
+
+    //dots at the four corner as boundry
     fill(255);
     ellipse(20, 20, 40);
     ellipse(1980, 1980, 40);
     ellipse(20, 1980, 40);
     ellipse(1980, 20, 40);
 
-    // for (let x = 0; x < img.width; x++) {
-    //     for (let y = 0; y < img.height; y++) {
-    //         // Calculate the 1D location from a 2D grid
-    //         let loc = (x + y * img.width) * 4;
-    //         // Get the R,G,B values from image
-    //         let r, g, b;
-    //         r = img.pixels[loc];
-    //         // Calculate an amount to change brightness based on proximity to the mouse
-    //         let maxdist = 25;
-    //         let d = dist(x, y, mouseX, mouseY);
-    //         let adjustbrightness = 100 * (maxdist - d) / maxdist;
-    //         r += adjustbrightness;
-    //         // Constrain RGB to make sure they are within 0-255 color range
-    //         r = constrain(r, 0, 255);
-    //         // Make a new color and set pixel in the window
-    //         let c = color(r, g, b);
-    //         let pixloc = (y * width + x) * 4;
-    //         pixels[pixloc] = r;
-    //         pixels[pixloc + 1] = r;
-    //         pixels[pixloc + 2] = r;
-    //         pixels[pixloc + 3] = 255;
-    //     }
-    // }
-    // updatePixels();
+    // spot light feature
+    // createBlurredEllipse(mouseX - 25, mouseY - 25, 50, 50);
 
+    // // Glow on the background image - glow follow mouse
+    spotlight(mouseX, mouseY);
+
+    // Generate balls 
     for (let ball of balls) {
         readytoplay = true;
+
+        // Balls change brightness if mouse hovered
         if (ball.contains(mouseX, mouseY)) {
             ball.changeColor(255);
         } else {
             ball.changeColor(0);
         }
+
+        // Balls show and move according to ball class
         ball.move();
         ball.show();
+
+        // Conditions for starting game instruction where to find the balls
         if (readytoplay && balls.length >= 20) {
             textSize(50);
             fill(200);
@@ -168,6 +161,8 @@ function draw() {
             textAlign(CENTER);
             text("NAVIGATE TO FIND BALLS", 1000, 1000);
         }
+
+        // In game remider to encourage to finish the game
         if (balls.length <= 6 && balls.length >= 3) {
             textSize(50);
             fill(200);
@@ -176,6 +171,8 @@ function draw() {
             text("WE ARE ALMOST THERE!", 1000, 1000);
         }
     }
+
+    // Finish game prompt when balls are left less than three
     if (balls.length < 3 && readytoplay) {
         textSize(50);
         fill(200);
@@ -184,6 +181,32 @@ function draw() {
         text("YOU BRING US TO THE HYDROTHERMAL VENT!", 1000, 1000);
     }
 };
+
+// // spot light feature
+// function createBlurredEllipse(x, y, width, height) {
+//     let img2 = createGraphics(width + 2, height + 2);
+//     img2.noStroke();
+//     img2.fill(255, 255, 255, 100);
+//     img2.ellipse(width / 2, height / 2, width, height);
+//     image(img2, x, y);
+//     filter(BLUR, 6);
+// }
+
+// // Glow on the background image
+function spotlight(x, y) {
+    // ellipse(x,y,20,20);
+    for (let r = 0; r < 300; r += 5) {
+        for (let theta = 0; theta < 360; theta += 5) {
+            let colour = img.get(x + r * cos(theta), y + r * sin(theta));
+            let newColour = color(colour[0], colour[1], colour[2], 300 - 1.5 * r);
+            fill(newColour);
+            // console.log(colour);
+            noStroke();
+            ellipse(x + r * cos(theta), y + r * sin(theta), 15, 15);
+
+        }
+    }
+}
 
 // MOUSE DRAGGED INTERACTION
 function mouseDragged() {
@@ -238,7 +261,7 @@ class Ball {
 
     swell() {
         this.a += 50;
-        this.r += 10;
+        this.r += 5;
         this.strokeWeight += random(10);
         this.strokeR -= random(255);
         this.strokeG -= random(100);
@@ -249,7 +272,7 @@ class Ball {
 
     shrink() {
         this.a -= 50;
-        this.r -= 10;
+        this.r -= 5;
         this.strokeWeight = 0;
         this.strokeR = 255;
         this.strokeG = 255;
